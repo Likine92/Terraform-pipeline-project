@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+    stages {
+        stage('starting-point') {
+            steps{
+                echo 'This is the starting point for the terraform project'
+            }
+        stage('provision infrastructure') {
+            environment {
+                AWS_ACCESS_KEY = credentials("aws-access-keys")
+                AWS_SECRET_KEY = credentials("secret-access-key")
+            }
+            steps{
+                sh "terraform init"
+                sh "terraform apply --auto-approve"
+            }
+        }
+        stage('done') {
+            steps {
+                echo "you're done"
+            }
+        }
+        stage ('Destroy the infrastructure') {
+            environment {
+                AWS_ACCESS_KEY = credentials("aws-access-keys")
+                AWS_SECRET_KEY = credentials("secret-access-key")
+            }
+            steps {
+                sh "terraform destroy --auto-approve"
+            }
+        }
+    }
+    }
+    
+}
